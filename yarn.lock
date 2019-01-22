@@ -109,6 +109,13 @@
     uuid "^3.3.2"
     websocket "^1.0.25"
 
+"@0x/contract-addresses@2.2":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.2.0.tgz#14f803009cccda70f56fc95968dddad2b2968a14"
+  integrity sha512-isIBWG58eqheTaeEXtY2fx93YitrstNsV4C/smYPxAFCi91uXBpZ0+qpYINJO/fphUvK91+7SQjX4PIaVDJVzw==
+  dependencies:
+    lodash "^4.17.5"
+
 "@0x/contract-addresses@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.2.0.tgz#14f803009cccda70f56fc95968dddad2b2968a14"
