@@ -2,6 +2,8 @@
 import { BigNumber } from '0x.js';
 import * as _ from 'lodash';
 
+import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
+
 // Network port to listen on
 export const HTTP_PORT = !_.isUndefined(process.env.HTTP_PORT) ? process.env.HTTP_PORT : 3000;
 // A time window after which the order is considered permanently expired
@@ -25,11 +27,15 @@ export const TAKER_FEE_ZRX_UNIT_AMOUNT = !_.isUndefined(process.env.TAKER_FEE_ZR
     ? new BigNumber(process.env.TAKER_FEE_ZRX_UNIT_AMOUNT)
     : new BigNumber(0);
 // Whitelisted token addresses. Set to a '*' instead of an array to allow all tokens.
-export const WHITELISTED_TOKENS: string[] | '*' = [
-    '0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa', // ZRX
-    '0xd0a1e359811322d97991e03f863a0c30c2cf029c', // WETH
-];
+
 // Ethereum RPC url
 export const RPC_URL = !_.isUndefined(process.env.RPC_URL) ? process.env.RPC_URL : 'https://kovan.infura.io/v3';
 // Default ERC20 token precision
 export const DEFAULT_ERC20_TOKEN_PRECISION = 18;
+
+export const contractAddresses = getContractAddressesForNetworkOrThrow(NETWORK_ID);
+
+export const WHITELISTED_TOKENS: string[] | '*' = [
+    contractAddresses.zrxToken, // ZRX
+    contractAddresses.etherToken, // WETH
+];

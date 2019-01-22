@@ -5,6 +5,8 @@ import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
 import * as _ from 'lodash';
 
+import { PrintUtils } from './print_utils';
+
 import {
     FEE_RECIPIENT,
     MAKER_FEE_ZRX_UNIT_AMOUNT,
@@ -35,6 +37,7 @@ const parsePaginationConfig = (req: express.Request): { page: number; perPage: n
 
 export const handlers = {
     assetPairsAsync: async (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('assetPairsAsync');
         utils.validateSchema(req.query, schemas.assetPairsRequestOptsSchema);
         const { page, perPage } = parsePaginationConfig(req);
         const assetPairs = await orderBook.getAssetPairsAsync(
@@ -46,12 +49,14 @@ export const handlers = {
         res.status(HttpStatus.OK).send(assetPairs);
     },
     ordersAsync: async (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('orderAsync');
         utils.validateSchema(req.query, schemas.ordersRequestOptsSchema);
         const { page, perPage } = parsePaginationConfig(req);
         const paginatedOrders = await orderBook.getOrdersAsync(page, perPage, req.query);
         res.status(HttpStatus.OK).send(paginatedOrders);
     },
     feeRecipients: (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('feeRecipients');
         const { page, perPage } = parsePaginationConfig(req);
         const normalizedFeeRecipient = FEE_RECIPIENT.toLowerCase();
         const feeRecipients = [normalizedFeeRecipient];
@@ -59,6 +64,7 @@ export const handlers = {
         res.status(HttpStatus.OK).send(paginatedFeeRecipients);
     },
     orderbookAsync: async (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('orderBookAsync');
         utils.validateSchema(req.query, schemas.orderBookRequestSchema);
         const { page, perPage } = parsePaginationConfig(req);
         const baseAssetData = req.query.baseAssetData;
@@ -67,6 +73,7 @@ export const handlers = {
         res.status(HttpStatus.OK).send(orderbookResponse);
     },
     orderConfig: (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('orderConfig');
         utils.validateSchema(req.body, schemas.orderConfigRequestSchema);
         const normalizedFeeRecipient = FEE_RECIPIENT.toLowerCase();
         const orderConfigResponse = {
@@ -78,6 +85,7 @@ export const handlers = {
         res.status(HttpStatus.OK).send(orderConfigResponse);
     },
     postOrderAsync: async (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('postOrderAsync');
         utils.validateSchema(req.body, schemas.signedOrderSchema);
         const signedOrder = unmarshallOrder(req.body);
         if (WHITELISTED_TOKENS !== '*') {
@@ -89,6 +97,7 @@ export const handlers = {
         res.status(HttpStatus.OK).send();
     },
     getOrderByHashAsync: async (req: express.Request, res: express.Response) => {
+        PrintUtils.printScenario('getOrderByHashAsync');
         const orderIfExists = await orderBook.getOrderByHashIfExistsAsync(req.params.orderHash);
         if (_.isUndefined(orderIfExists)) {
             throw new NotFoundError();

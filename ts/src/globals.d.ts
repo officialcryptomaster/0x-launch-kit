@@ -3,3 +3,7 @@ declare namespace Express {
         networkId: number;
     }
 }
+
+declare module 'ora';
+
+declare module 'cli-table';
