@@ -6,7 +6,6 @@ import { errorUtils, intervalUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
-    contractAddresses,
     DEFAULT_ERC20_TOKEN_PRECISION,
     NETWORK_ID,
     ORDER_SHADOWING_MARGIN_MS,
