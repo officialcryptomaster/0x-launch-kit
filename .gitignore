@@ -65,3 +65,11 @@ typescript/lib
 
 # sqlite DB
 database.sqlite
+
+# generated files
+ts/lib
+
+# vim temp files
+.~
+*.swp
+*.swo
