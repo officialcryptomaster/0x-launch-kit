@@ -11,16 +11,31 @@ import {
     ORDER_SHADOWING_MARGIN_MS,
     PERMANENT_CLEANUP_INTERVAL_MS,
     RPC_URL,
+    VEIL_ETHER_ASSETDATA,
 } from './config';
 import { MAX_TOKEN_SUPPLY_POSSIBLE } from './constants';
-
 import { getDBConnection } from './db_connection';
 import { SignedOrderModel } from './models/SignedOrderModel';
 import { paginate } from './paginator';
+import {AssetDataToMetadataMap, getAllTokenMetadata, TokenMetadata} from './services/web3_services';
 import { utils } from './utils';
 
 // Mapping from an order hash to the timestamp when it was shadowed
 const shadowedOrders: Map<string, number> = new Map();
+let tokenMetadata: AssetDataToMetadataMap = {};
+getAllTokenMetadata().then(res => {tokenMetadata = res; });
+// tslint:disable-next-line:no-object-literal-type-assertion
+
+const getTokenMetadata = (order: SignedOrder): (TokenMetadata | {}) => {
+    if (order.makerAssetData === VEIL_ETHER_ASSETDATA) {
+        if (!(order.takerAssetData === VEIL_ETHER_ASSETDATA)) {
+            return tokenMetadata[order.takerAssetData];
+        }
+    } else {
+        return tokenMetadata[order.makerAssetData];
+    }
+    return {};
+};
 
 export const orderBook = {
     onOrderStateChangeCallback: (err: Error | null, orderState?: OrderState) => {
@@ -140,11 +155,15 @@ export const orderBook = {
         const bidApiOrders: APIOrder[] = bidSignedOrderModels
             .map(deserializeOrder)
             .filter(order => !shadowedOrders.has(orderHashUtils.getOrderHashHex(order)))
-            .map(signedOrder => ({ metaData: {}, order: signedOrder }));
+            .map(signedOrder => (
+                { metaData: getTokenMetadata(signedOrder),
+                  order: signedOrder }));
         const askApiOrders: APIOrder[] = askSignedOrderModels
             .map(deserializeOrder)
             .filter(order => !shadowedOrders.has(orderHashUtils.getOrderHashHex(order)))
-            .map(signedOrder => ({ metaData: {}, order: signedOrder }));
+            .map(signedOrder => (
+                { metaData: getTokenMetadata(signedOrder),
+                  order: signedOrder }));
         const paginatedBidApiOrders = paginate(bidApiOrders, page, perPage);
         const paginatedAskApiOrders = paginate(askApiOrders, page, perPage);
         return {
@@ -210,7 +229,9 @@ export const orderBook = {
                     assetDataUtils.decodeAssetDataOrThrow(signedOrder.takerAssetData).assetProxyId ===
                         ordersFilterParams.takerAssetProxyId,
             );
-        const apiOrders: APIOrder[] = signedOrders.map(signedOrder => ({ metaData: {}, order: signedOrder }));
+        const apiOrders: APIOrder[] = signedOrders.map(signedOrder => (
+            { metaData: getTokenMetadata(signedOrder),
+              order: signedOrder }));
         const paginatedApiOrders = paginate(apiOrders, page, perPage);
         return paginatedApiOrders;
     },
@@ -221,7 +242,9 @@ export const orderBook = {
             return undefined;
         } else {
             const deserializedOrder = deserializeOrder(signedOrderModelIfExists as Required<SignedOrderModel>);
-            return { metaData: {}, order: deserializedOrder };
+            return {
+                metaData: getTokenMetadata(deserializedOrder),
+                order: deserializedOrder };
         }
     },
 };

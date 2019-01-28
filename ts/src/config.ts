@@ -1,6 +1,7 @@
 // tslint:disable:custom-no-magic-numbers
-import { BigNumber } from '0x.js';
+import { BigNumber, assetDataUtils } from '0x.js';
 import * as _ from 'lodash';
+
 
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 
@@ -13,7 +14,7 @@ export const PERMANENT_CLEANUP_INTERVAL_MS = 10 * 1000; // tslint:disable-line c
 // Max number of entities per page
 export const MAX_PER_PAGE = 1000;
 // Default network id to use when not specified
-export const NETWORK_ID = !_.isUndefined(process.env.NETWORK_ID) ? _.parseInt(process.env.NETWORK_ID) : 42;
+export const NETWORK_ID = !_.isUndefined(process.env.NETWORK_ID) ? _.parseInt(process.env.NETWORK_ID) : 4;
 // The fee recipient for orders
 export const FEE_RECIPIENT = !_.isUndefined(process.env.FEE_RECIPIENT)
     ? process.env.FEE_RECIPIENT
@@ -26,7 +27,6 @@ export const MAKER_FEE_ZRX_UNIT_AMOUNT = !_.isUndefined(process.env.MAKER_FEE_ZR
 export const TAKER_FEE_ZRX_UNIT_AMOUNT = !_.isUndefined(process.env.TAKER_FEE_ZRX_UNIT_AMOUNT)
     ? new BigNumber(process.env.TAKER_FEE_ZRX_UNIT_AMOUNT)
     : new BigNumber(0);
-// Whitelisted token addresses. Set to a '*' instead of an array to allow all tokens.
 
 // Ethereum RPC url
 export const RPC_URL = !_.isUndefined(process.env.RPC_URL) ? process.env.RPC_URL : 'https://kovan.infura.io/v3';
@@ -35,6 +35,7 @@ export const DEFAULT_ERC20_TOKEN_PRECISION = 18;
 
 export const contractAddresses = getContractAddressesForNetworkOrThrow(NETWORK_ID);
 
+// Whitelisted token addresses. Set to a '*' instead of an array to allow all tokens.
 export const WHITELISTED_TOKENS: string[] | '*' = [
     contractAddresses.zrxToken, // ZRX
     contractAddresses.etherToken, // WETH
@@ -56,3 +57,5 @@ export const addressBooksByNetwork: AddressBooksByNetwork = {
   };
 
 export const ADDRESS_BOOK = addressBooksByNetwork[NETWORK_ID];
+export const VEIL_ETHER_ADDRESS = ADDRESS_BOOK.VeilEther;
+export const VEIL_ETHER_ASSETDATA = assetDataUtils.encodeERC20AssetData(VEIL_ETHER_ADDRESS);

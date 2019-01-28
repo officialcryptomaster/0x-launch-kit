@@ -1,3 +1,5 @@
+import {assetDataUtils} from '0x.js';
+
 import {ADDRESS_BOOK, RPC_URL} from '../config';
 
 const Web3 = require("web3");
@@ -18,21 +20,21 @@ export interface TokenMetadata {
     readonly topic: string;
 }
 
-export interface TokenAddressToMetadataMap {
+export interface AssetDataToMetadataMap {
     [index: string]: TokenMetadata;
 }
 
-export const getLongShortTokenMetadata = async (): Promise<TokenAddressToMetadataMap | null> => {
+export const getAllTokenMetadata = async (): Promise<AssetDataToMetadataMap> => {
     const registryInstance = await getRegistryInstance();
+    const assetDataToMetadata: AssetDataToMetadataMap = {};
     let markets: string[] = [];
     try {
         markets = await registryInstance.methods.getMarkets().call();
     } catch (err) {
+        // tslint:disable-next-line:no-console
         console.error(err);
-        return null;
+        return assetDataToMetadata;
     }
-
-    const tokenAddressToMetadata: TokenAddressToMetadataMap = {};
     markets.forEach(
         async (market: string) => {
         let marketData = null;
@@ -48,9 +50,11 @@ export const getLongShortTokenMetadata = async (): Promise<TokenAddressToMetadat
                 'market': market,
                 'topic': marketData.topic,
             };
-            tokenAddressToMetadata[marketData.longToken] = metadata;
-            tokenAddressToMetadata[marketData.shortToken] = metadata;
+            const longTokenAssetData = assetDataUtils.encodeERC20AssetData(marketData.longToken);
+            const shortTokenAssetData = assetDataUtils.encodeERC20AssetData(marketData.shortToken);
+            assetDataToMetadata[longTokenAssetData] = metadata;
+            assetDataToMetadata[shortTokenAssetData] = metadata;
         }
     });
-    return tokenAddressToMetadata;
+    return assetDataToMetadata;
 };
