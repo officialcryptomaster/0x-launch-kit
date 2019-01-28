@@ -39,3 +39,20 @@ export const WHITELISTED_TOKENS: string[] | '*' = [
     contractAddresses.zrxToken, // ZRX
     contractAddresses.etherToken, // WETH
 ];
+
+export interface AddressBook {
+    [index: string]: string;
+}
+
+export interface AddressBooksByNetwork {
+    [index: string]: AddressBook;
+}
+
+export const addressBooksByNetwork: AddressBooksByNetwork = {
+    '4': {
+      'OptionsRegistry': '0xa5b14070af70f56fc0b3216045e53d3224bb0172',
+      'VeilEther': '0xc4abc01578139e2105d9c9eba0b0aa6f6a60d082',
+    },
+  };
+
+export const ADDRESS_BOOK = addressBooksByNetwork[NETWORK_ID];
