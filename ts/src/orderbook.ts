@@ -22,17 +22,32 @@ import { utils } from './utils';
 
 // Mapping from an order hash to the timestamp when it was shadowed
 const shadowedOrders: Map<string, number> = new Map();
+// Cache the token metadata so it can be reused
 let tokenMetadata: AssetDataToMetadataMap = {};
-getAllTokenMetadata().then(res => {tokenMetadata = res; });
+getAllTokenMetadata()
+.then(
+    res => {tokenMetadata = res; },
+    // tslint:disable-next-line:no-console
+    reason => { console.log('error trying to getAllTokenMetadata():' + reason); });
 // tslint:disable-next-line:no-object-literal-type-assertion
 
 const getTokenMetadata = (order: SignedOrder): (TokenMetadata | {}) => {
     if (order.makerAssetData === VEIL_ETHER_ASSETDATA) {
         if (!(order.takerAssetData === VEIL_ETHER_ASSETDATA)) {
-            return tokenMetadata[order.takerAssetData];
+            try {
+                return tokenMetadata[order.takerAssetData];
+            } catch (err) {
+                // tslint:disable-next-line:no-console
+                console.log(`missing metadata for $order.takerAssetData`);
+            }
         }
     } else {
-        return tokenMetadata[order.makerAssetData];
+        try {
+            return tokenMetadata[order.makerAssetData];
+        } catch (err) {
+            // tslint:disable-next-line:no-console
+            console.log(`missing metadata for $order.makerAssetData`);
+        }
     }
     return {};
 };

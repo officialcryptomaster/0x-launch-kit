@@ -29,7 +29,7 @@ export const TAKER_FEE_ZRX_UNIT_AMOUNT = !_.isUndefined(process.env.TAKER_FEE_ZR
     : new BigNumber(0);
 
 // Ethereum RPC url
-export const RPC_URL = !_.isUndefined(process.env.RPC_URL) ? process.env.RPC_URL : 'https://kovan.infura.io/v3';
+export const RPC_URL = !_.isUndefined(process.env.RPC_URL) ? process.env.RPC_URL : 'https://kovan.infura.io/v3/cc9b617da6eb4d2ba3533012571d7a49';
 // Default ERC20 token precision
 export const DEFAULT_ERC20_TOKEN_PRECISION = 18;
 
